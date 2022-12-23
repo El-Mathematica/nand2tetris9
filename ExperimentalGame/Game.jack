@@ -1,0 +1,88 @@
+//place up to 25 blocks on a screen, place the block using the arrow keys, save the position of the
+//block using z, creating a new block on the screen at the top left.
+
+//most code stolen from square project code given.
+
+class Game {
+    field int direction;
+    field Square square; //current square
+    field Array arr; //co-ordinates of squares previously placed on screen
+    constructor Game new() {
+        let direction = 0;
+        let square = Square.new(0, 0, 10);
+        return this;
+    }
+
+    method void dispose() {
+      do square.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+    method void moveSquare() {
+      if (direction = 1) { do square.moveUp(); }
+      if (direction = 2) { do square.moveDown(); }
+      if (direction = 3) { do square.moveLeft(); }
+      if (direction = 4) { do square.moveRight(); }
+      do Sys.wait(5);  // delays the next movement
+      return;
+   }
+
+    method void run() {
+
+        var char key;
+        var int size;
+        var boolean exit;
+        var int counter; 
+        let arr = Array.new(100); // array storing all co-ords
+        let exit = false;
+        let size = 0;
+      
+        while (~exit) {
+            
+         // waits for a key to be pressed
+            while (counter < size) {
+                do Screen.drawRectangle(arr[counter], arr[counter+1], arr[counter+2], arr[counter+3]);
+                let counter = counter + 4;
+            }
+            let counter = 0;
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do moveSquare();
+            }
+            if (key = 81)  { let exit = true; }     // q key
+            if (key = 90)  {
+                if(size < 100) { //potential break point;
+                    let arr[size] = square.first();
+                    let arr[size+1] = square.second();
+                    let arr[size+2] = square.third();
+                    let arr[size+3] = square.fourth();
+                    let size = size + 4;
+
+                } 
+                do square.dispose();
+                let square = Square.new(0,0,10);
+            } // z key
+
+            if (key = 131) { let direction = 1; }   // up arrow
+            if (key = 133) { let direction = 2; }   // down arrow
+            if (key = 130) { let direction = 3; }   // left arrow
+            if (key = 132) { let direction = 4; }   // right arrow
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            while (counter < size) {
+                do Screen.drawRectangle(arr[counter], arr[counter+1], arr[counter+2], arr[counter+3]);
+                let counter = counter + 4;
+            } // render all previous squares on grid after previous moveSquare()
+            let counter = 0;
+            let key = Keyboard.keyPressed();
+            do moveSquare();
+         }
+            let direction = 0; //block stops moving after key release
+     } // while
+     return;
+   
+    }
+
+}
